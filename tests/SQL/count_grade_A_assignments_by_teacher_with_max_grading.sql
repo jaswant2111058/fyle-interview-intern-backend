@@ -16,3 +16,6 @@ SELECT
     COUNT(*) AS count_grade_A_assignments
 FROM assignments
 WHERE teacher_id = (SELECT teacher_id FROM max_graded_teacher);
+
+
+

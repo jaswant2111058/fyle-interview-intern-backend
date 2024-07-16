@@ -56,3 +56,5 @@ def test_regrade_assignment(client, h_principal):
 
     assert response.json['data']['state'] == AssignmentStateEnum.GRADED.value
     assert response.json['data']['grade'] == GradeEnum.B.value
+
+

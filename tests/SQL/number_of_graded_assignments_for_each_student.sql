@@ -4,3 +4,5 @@ SELECT
 FROM assignments
 WHERE state = 'GRADED'
 GROUP BY student_id;
+
+
