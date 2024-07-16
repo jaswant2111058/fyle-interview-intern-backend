@@ -43,3 +43,7 @@ def handle_error(err):
         ), err.code
 
     raise err
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
