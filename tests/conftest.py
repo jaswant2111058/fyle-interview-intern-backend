@@ -16,7 +16,6 @@ def h_student_1():
             'user_id': 1
         })
     }
-
     return headers
 
 
@@ -28,7 +27,6 @@ def h_student_2():
             'user_id': 2
         })
     }
-
     return headers
 
 
@@ -40,7 +38,6 @@ def h_teacher_1():
             'user_id': 3
         })
     }
-
     return headers
 
 
@@ -52,7 +49,6 @@ def h_teacher_2():
             'user_id': 4
         })
     }
-
     return headers
 
 
@@ -64,5 +60,4 @@ def h_principal():
             'user_id': 5
         })
     }
-
     return headers

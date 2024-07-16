@@ -17,7 +17,7 @@ def create_n_graded_assignments_for_teacher(number: int = 0, teacher_id: int = 1
     - int: Count of assignments with grade 'A'.
     """
     # Count the existing assignments with grade 'A' for the specified teacher
-    grade_a_counter: int = Assignment.filter(
+    grade_a_counter: int = Assignment.query.filter(
         Assignment.teacher_id == teacher_id,
         Assignment.grade == GradeEnum.A
     ).count()
@@ -54,7 +54,7 @@ def test_get_assignments_in_graded_state_for_each_student():
     """Test to get graded assignments for each student"""
 
     # Find all the assignments for student 1 and change its state to 'GRADED'
-    submitted_assignments: Assignment = Assignment.filter(Assignment.student_id == 1)
+    submitted_assignments = Assignment.query.filter(Assignment.student_id == 1).all()
 
     # Iterate over each assignment and update its state
     for assignment in submitted_assignments:

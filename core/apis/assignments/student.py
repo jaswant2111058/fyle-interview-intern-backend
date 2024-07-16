@@ -3,8 +3,10 @@ from core import db
 from core.apis import decorators
 from core.apis.responses import APIResponse
 from core.models.assignments import Assignment
+from core.models.teachers import Teacher
 
-from .schema import AssignmentSchema, AssignmentSubmitSchema
+from .schema import AssignmentSchema, AssignmentSubmitSchema, AssignmentGradeSchema
+
 student_assignments_resources = Blueprint('student_assignments_resources', __name__)
 
 
@@ -46,3 +48,59 @@ def submit_assignment(p, incoming_payload):
     db.session.commit()
     submitted_assignment_dump = AssignmentSchema().dump(submitted_assignment)
     return APIResponse.respond(data=submitted_assignment_dump)
+
+
+# New route to grade an assignment
+@student_assignments_resources.route('/assignments/grade', methods=['POST'], strict_slashes=False)
+@decorators.accept_payload
+@decorators.authenticate_principal
+def grade_assignment(p, incoming_payload):
+    """Grade an assignment"""
+    grade_assignment_payload = AssignmentGradeSchema().load(incoming_payload)
+
+    graded_assignment = Assignment.grade(
+        _id=grade_assignment_payload.id,
+        grade=grade_assignment_payload.grade,
+        auth_principal=p
+    )
+    db.session.commit()
+    graded_assignment_dump = AssignmentSchema().dump(graded_assignment)
+    return APIResponse.respond(data=graded_assignment_dump)
+
+
+# New route to list all teachers for principal
+@student_assignments_resources.route('/teachers', methods=['GET'], strict_slashes=False)
+@decorators.authenticate_principal
+def list_teachers(p):
+    """Returns list of all teachers"""
+    teachers = Teacher.query.all()
+    teachers_dump = TeacherSchema().dump(teachers, many=True)
+    return APIResponse.respond(data=teachers_dump)
+
+
+# New route to list all assignments for principal
+@student_assignments_resources.route('/principal/assignments', methods=['GET'], strict_slashes=False)
+@decorators.authenticate_principal
+def list_all_assignments_for_principal(p):
+    """Returns list of all assignments for principal"""
+    assignments = Assignment.query.filter(Assignment.state.in_(["SUBMITTED", "GRADED"])).all()
+    assignments_dump = AssignmentSchema().dump(assignments, many=True)
+    return APIResponse.respond(data=assignments_dump)
+
+
+# New route to grade or re-grade an assignment by principal
+@student_assignments_resources.route('/principal/assignments/grade', methods=['POST'], strict_slashes=False)
+@decorators.accept_payload
+@decorators.authenticate_principal
+def principal_grade_assignment(p, incoming_payload):
+    """Grade or re-grade an assignment by principal"""
+    grade_assignment_payload = AssignmentGradeSchema().load(incoming_payload)
+
+    graded_assignment = Assignment.regrade_by_principal(
+        _id=grade_assignment_payload.id,
+        grade=grade_assignment_payload.grade,
+        auth_principal=p
+    )
+    db.session.commit()
+    graded_assignment_dump = AssignmentSchema().dump(graded_assignment)
+    return APIResponse.respond(data=graded_assignment_dump)
